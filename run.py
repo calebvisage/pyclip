@@ -54,6 +54,9 @@ client.subscribe(topic)#subscribe
 
 SYS.running = True
 
+SYS.curClipboard = getClipboardText()
+SYS.prevClipboard = getClipboardText()
+
 while SYS.running:
     try:
         SYS.curClipboard = getClipboardText()
