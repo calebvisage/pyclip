@@ -29,9 +29,9 @@ class SYS:
 def on_message(client, userdata, message):
     time.sleep(1)
     msg = str(message.payload.decode("utf-8"))
-    SYS.curClipboard = msg
     SYS.prevClipboard = msg
-    print("NEW CLIPBOARD TEXT RECEIVED")
+    SYS.curClipboard = msg
+    print(f"NEW CLIPBOARD TEXT RECEIVED: {msg}")
 
 
 if len(sys.argv) < 2:
