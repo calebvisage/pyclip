@@ -6,15 +6,29 @@ import sys
 import clipboard
 import getpass
 import tkinter as tk
+import pyperclip
+import os
 
 
+
+    try:
+        pyperclip.copy(text)
+    except:
+        print("You need to install 'xsel' and or 'xclip'")
+        print("try 'sudo apt-get install xsel xclip'")
+        sys.exit()
 
 
 def getClipboardText():
-    root = tk.Tk()
+    root = SYS.tkin
     # keep the window from showing
     root.withdraw()
-    return root.clipboard_get()
+    try:
+        return root.clipboard_get()
+    except:
+        print("COUND NOT GET CLIPBOARD")
+        pass
+    root.destroy()
 
 
 class SYS:
@@ -24,11 +38,17 @@ class SYS:
     prevClipboard = ''
     running = False
     topic = ''
+    tkin = None
+    changeClipboard = False
+    newClipboardText = ''
 
 
 def on_message(client, userdata, message):
     time.sleep(1)
     msg = str(message.payload.decode("utf-8"))
+    # setClipboardText(msg)
+    SYS.newClipboardText = msg
+    SYS.changeClipboard = True
     SYS.prevClipboard = msg
     SYS.curClipboard = msg
     print(f"NEW CLIPBOARD TEXT RECEIVED: {msg}")
@@ -52,24 +72,33 @@ client.loop_start()
 client.subscribe(topic)#subscribe
 
 
+SYS.tkin = tk.Tk()
+
+
+
 SYS.running = True
 
 SYS.curClipboard = getClipboardText()
 SYS.prevClipboard = getClipboardText()
 
+
 while SYS.running:
+    if SYS.changeClipboard:
+        SYS.changeClipboard = False 
+        setClipboardText(SYS.newClipboardText)
     try:
-        SYS.curClipboard = getClipboardText()
+        # SYS.curClipboard = getClipboardText()
         if not SYS.curClipboard == SYS.prevClipboard:
             SYS.prevClipboard = SYS.curClipboard
             client.publish(SYS.topic, SYS.curClipboard)
     except Exception as e:
         print(f"UNABLE TO GET CLIPBOARD: {e}")
-    time.sleep(0.5)
+    time.sleep(0.1)
 
 
 client.disconnect() #disconnect
 client.loop_stop() #stop loop
+
 
 
 
