@@ -11,6 +11,7 @@ import os
 
 
 
+def setClipboardText(text):
     try:
         pyperclip.copy(text)
     except:
@@ -46,11 +47,11 @@ class SYS:
 def on_message(client, userdata, message):
     time.sleep(1)
     msg = str(message.payload.decode("utf-8"))
-    # setClipboardText(msg)
-    SYS.newClipboardText = msg
-    SYS.changeClipboard = True
+    # SYS.newClipboardText = msg
+    # SYS.changeClipboard = True
     SYS.prevClipboard = msg
     SYS.curClipboard = msg
+    setClipboardText(msg)
     print(f"NEW CLIPBOARD TEXT RECEIVED: {msg}")
 
 
@@ -83,11 +84,8 @@ SYS.prevClipboard = getClipboardText()
 
 
 while SYS.running:
-    if SYS.changeClipboard:
-        SYS.changeClipboard = False 
-        setClipboardText(SYS.newClipboardText)
     try:
-        # SYS.curClipboard = getClipboardText()
+        SYS.curClipboard = getClipboardText()
         if not SYS.curClipboard == SYS.prevClipboard:
             SYS.prevClipboard = SYS.curClipboard
             client.publish(SYS.topic, SYS.curClipboard)
