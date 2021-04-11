@@ -8,12 +8,13 @@ import getpass
 import tkinter as tk
 import pyperclip
 import os
+import random
 
 
 
 def setClipboardText(text):
     try:
-        pyperclip.copy(text)
+        clipboard.copy(text)
     except:
         print("You need to install 'xsel' and or 'xclip'")
         print("try 'sudo apt-get install xsel xclip'")
@@ -21,15 +22,7 @@ def setClipboardText(text):
 
 
 def getClipboardText():
-    root = SYS.tkin
-    # keep the window from showing
-    root.withdraw()
-    try:
-        return root.clipboard_get()
-    except:
-        print("COUND NOT GET CLIPBOARD")
-        pass
-    root.destroy()
+    return clipboard.paste()
 
 
 class SYS:
@@ -40,22 +33,21 @@ class SYS:
     running = False
     topic = ''
     tkin = None
-    changeClipboard = False
-    newClipboardText = ''
-    doCheck = False 
+    doCheck = True 
+    myId = random.randint(1000,9999)
 
 
 def on_message(client, userdata, message):
-    SYS.doCheck = False
-    time.sleep(1)
-    msg = str(message.payload.decode("utf-8"))
-    # SYS.newClipboardText = msg
-    # SYS.changeClipboard = True
-    SYS.prevClipboard = msg
-    SYS.curClipboard = msg
-    setClipboardText(msg)
-    print(f"NEW CLIPBOARD TEXT RECEIVED: {msg}")
-    SYS.doCheck = True
+    # print(userdata)
+    if not int(message.topic.split('/')[3]) == int(SYS.myId):
+        SYS.doCheck = False
+        time.sleep(1)
+        msg = str(message.payload.decode("utf-8"))
+        SYS.prevClipboard = msg
+        SYS.curClipboard = msg
+        setClipboardText(msg)
+        print(f"NEW CLIPBOARD TEXT RECEIVED: {msg}")
+        SYS.doCheck = True
 
 
 if len(sys.argv) < 2:
@@ -66,18 +58,17 @@ if len(sys.argv) < 2:
 topicEnd = sys.argv[1]
 topic = f"xclipboard/shared/{topicEnd}"
 
-SYS.topic = topic
+SYS.topic = topic+f"/{SYS.myId}"
 
 
-client=paho.Client(SYS.username) 
+client=paho.Client(f"{SYS.username}_{SYS.myId}") 
 client.on_message=on_message
 client.connect(SYS.broker)
 client.loop_start()
-client.subscribe(topic)#subscribe
+client.subscribe(topic+"/#")#subscribe
 
 
 SYS.tkin = tk.Tk()
-
 
 
 SYS.running = True
@@ -95,7 +86,7 @@ while SYS.running:
                 client.publish(SYS.topic, SYS.curClipboard)
         except Exception as e:
             print(f"UNABLE TO GET CLIPBOARD: {e}")
-    time.sleep(0.1)
+    time.sleep(0.01)
 
 
 client.disconnect() #disconnect
