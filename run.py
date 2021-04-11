@@ -42,9 +42,11 @@ class SYS:
     tkin = None
     changeClipboard = False
     newClipboardText = ''
+    doCheck = False 
 
 
 def on_message(client, userdata, message):
+    SYS.doCheck = False
     time.sleep(1)
     msg = str(message.payload.decode("utf-8"))
     # SYS.newClipboardText = msg
@@ -53,6 +55,7 @@ def on_message(client, userdata, message):
     SYS.curClipboard = msg
     setClipboardText(msg)
     print(f"NEW CLIPBOARD TEXT RECEIVED: {msg}")
+    SYS.doCheck = True
 
 
 if len(sys.argv) < 2:
@@ -84,13 +87,14 @@ SYS.prevClipboard = getClipboardText()
 
 
 while SYS.running:
-    try:
-        SYS.curClipboard = getClipboardText()
-        if not SYS.curClipboard == SYS.prevClipboard:
-            SYS.prevClipboard = SYS.curClipboard
-            client.publish(SYS.topic, SYS.curClipboard)
-    except Exception as e:
-        print(f"UNABLE TO GET CLIPBOARD: {e}")
+    if SYS.doCheck:
+        try:
+            SYS.curClipboard = getClipboardText()
+            if not SYS.curClipboard == SYS.prevClipboard:
+                SYS.prevClipboard = SYS.curClipboard
+                client.publish(SYS.topic, SYS.curClipboard)
+        except Exception as e:
+            print(f"UNABLE TO GET CLIPBOARD: {e}")
     time.sleep(0.1)
 
 
