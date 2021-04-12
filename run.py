@@ -9,7 +9,27 @@ import tkinter as tk
 import pyperclip
 import os
 import random
+import cryptography
 
+
+class SYS:
+    username = getpass.getuser()
+    broker = "broker.hivemq.com"
+    curClipboard = ''
+    prevClipboard = ''
+    running = False
+    topic = ''
+    tkin = None
+    doCheck = True 
+    myId = random.randint(1000,9999)
+
+
+def encrypt(msg):
+    from cryptography.fernet import Fernet
+    key = Fernet.generate_key()
+    f = Fernet(key)
+    token = f.encrypt(msg)
+    f.decrypt(token)
 
 
 def setClipboardText(text):
@@ -23,18 +43,6 @@ def setClipboardText(text):
 
 def getClipboardText():
     return clipboard.paste()
-
-
-class SYS:
-    username = getpass.getuser()
-    broker = "broker.hivemq.com"
-    curClipboard = ''
-    prevClipboard = ''
-    running = False
-    topic = ''
-    tkin = None
-    doCheck = True 
-    myId = random.randint(1000,9999)
 
 
 def on_message(client, userdata, message):
@@ -73,6 +81,7 @@ SYS.tkin = tk.Tk()
 
 SYS.running = True
 
+
 SYS.curClipboard = getClipboardText()
 SYS.prevClipboard = getClipboardText()
 
@@ -91,6 +100,8 @@ while SYS.running:
 
 client.disconnect() #disconnect
 client.loop_stop() #stop loop
+
+
 
 
 
