@@ -1,2 +1,2 @@
 # pyclipX
- a cross-platform shared clipboard manager
+ cross-platform clipboard sync using python and mqtt
