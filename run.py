@@ -11,13 +11,12 @@ import os
 import random
 
 
-
 def setClipboardText(text):
     try:
         clipboard.copy(text)
     except:
-        print("You need to install 'xsel' and or 'xclip'")
-        print("try 'sudo apt-get install xsel xclip'")
+        print("Error copying from clipboard.")
+        print("If you're on Linux, try installing 'xsel' or 'xclip' (only works under Xorg).")
         sys.exit()
 
 
@@ -57,7 +56,6 @@ if len(sys.argv) < 2:
 
 topicEnd = sys.argv[1]
 topic = f"xclipboard/shared/{topicEnd}"
-
 SYS.topic = topic+f"/{SYS.myId}"
 
 
@@ -69,9 +67,8 @@ client.subscribe(topic+"/#")#subscribe
 
 
 SYS.tkin = tk.Tk()
-
-
 SYS.running = True
+
 
 SYS.curClipboard = getClipboardText()
 SYS.prevClipboard = getClipboardText()
@@ -89,11 +86,5 @@ while SYS.running:
     time.sleep(0.01)
 
 
-client.disconnect() #disconnect
-client.loop_stop() #stop loop
-
-
-
-
-
-
+client.disconnect()
+client.loop_stop()
